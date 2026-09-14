@@ -22,35 +22,44 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers(
-                    "/api/auth/**", 
-                    "/auth/**",
-                    "/api/doctors/**", 
-                    "/api/departments/**", 
-                    "/api/appointments", 
-                    "/api/appointments/**",
-                    "/api/prescriptions",
-                    "/api/prescriptions/**",
-                    "/api/billings",
-                    "/api/billings/**",
-                    "/api/admin/**"
-                ).permitAll()
-                .anyRequest().authenticated()
-            );
-        return http.build();
-    }
+   @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .requestMatchers(
+                "/api/auth/**", 
+                "/auth/**",
+                "/login/**",         
+                "/api/login/**",     
+                "/register/**",      // Added for /register
+                "/api/register/**",  // Added for /api/register
+                "/doctors/**",       // Added in case frontend calls /doctors directly
+                "/api/doctors/**", 
+                "/api/departments/**", 
+                "/api/appointments", 
+                "/api/appointments/**",
+                "/api/prescriptions",
+                "/api/prescriptions/**",
+                "/api/billings",
+                "/api/billings/**",
+                "/api/admin/**"
+            ).permitAll()
+            .anyRequest().authenticated()
+        );
+    return http.build();
+}
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://hospital-frontend-9ft7.vercel.app"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
